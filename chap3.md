@@ -32,7 +32,7 @@ Scenario: 기존 라우터에 네트워크 추가
     class AddNetworkSteps(
         val routerId: RouterId,
         
-        val router: Router
+        val router: Router,
         
         val RouterNetworkFileAdapter: RouterNetworkFileAdapter = RouterNetworkFileAdapter.instance,
         
