@@ -23,6 +23,9 @@
 ### 입력 어댑터 생성
 
 - 입력 포트는 유스케이스의 목표를 달성하기 위해 입력 포트가 수행하는 오퍼레이션의 수행 방법을 지정해 유스케이스를 구현하는 수단이다.
+- 입력 포트 객체는 입력 어댑터가 보낸 자극을 통해 오퍼레이션을 수행하는데 필요한 모든 데이터를 수신한다.
+
+### 기반 어댑터
 
 ```kotlin
 abstract class RouterNetworkAdapter {
@@ -32,15 +35,18 @@ abstract class RouterNetworkAdapter {
     protected fun addNetworkRouter(params: Map<String, String>): Router {
         val routerId = RouterId.withId(params.get("routerId"))
         val network = Network(IP.fromAddress(params.get("address")), params.get("name"), Integer.valueOf(params.get("cidr")))
+				return routerNetworkUseCase.addNetworkToRouter(routerId, network)
     }
 
     abstract fun processRequest(requestParams: Any): Router
 }
 ```
 
-- 어댑터와 관련된 입력 포트와 통신을 위한 표준 오퍼레이션을 제공한다.
+- 기반 어댑터는 어댑터와 관련된 입력 포트와 통신을 위한 표준 오퍼레이션을 제공한다.
 - 입력 포트를 직접 참조하지 않고 유스케이스 인터페이스 참조를 활용한다.
 - 유스케이스 참조는 입력 어댑터의 생성자에 의해 전달되고 초기화된다.
+
+### REST 입력 어댑터
 
 ```kotlin
 // 프레임워크 기반 의존성 주입 기법을 사용하면 제거할 수 있다.
@@ -74,6 +80,8 @@ class RouterNetworkRestAdapter(
 }
 ```
 
+### CLI 입력 어댑터
+
 ```kotlin
 // 프레임워크 기반 의존성 주입 기법을 사용하면 제거할 수 있다.
 val outputPort = RouterNetworkH2Adapter.getInstance()
@@ -97,6 +105,8 @@ class RouterNetworkCLIAdapter (
     }
 }
 ```
+
+### 입력 어댑터 호출하기
 
 ```kotlin
 class App {
@@ -136,9 +146,13 @@ class App {
 }
 ```
 
+- 입력 어댑터를 통해 비즈니스 로직을 방해하지 않으면서 다양한 기술을 통해 시스템에 쉽게 액세스 할 수 있다.
+
 ## 다양한 데이터 소스와 통신하기 위한 출력 어댑터 사용
 
 - 객체지향 언어와 엔터프라이즈 소프트웨어는 데이터를 획득하고 유지하는 방법에 의존한다.
+    - 객체, RDBMS, NoSQL 등 데이터베이스, 파일 시스템, 메시지 브로커, LDAP 등 스토리지
+- 클라우드 컴퓨팅 세계에서는 데이터를 주고받기 위해 시스템을 다양한 기술과 통합할 수 있어야 한다.
 
 ### 출력 어댑터 생성
 
@@ -147,6 +161,8 @@ class App {
     - 드리븐 오퍼레이션은 유스케이스를 통해 서술되며, 유스케이스의 입력 포트 구현에 있는 오퍼레이션에 의해 트리거된다.
 - 애플리케이션 헥사곤에 있는 출력 포트는 외부 시스템과의 상호작용을 추상적인 방법으로 표현하고, 출력 어댑터는 이러한 상호작용이 발생하는 방법을 구체적인 용어로 설명한다.
 - 출력 어댑터를 통해 시스템이 데이터 지속성과 기타 유형의 외부 통합을 허용하기 위해 사용할 수 있는 기술을 결정할 수 있다.
+
+### H2 출력 어댑터
 
 ```kotlin
 class RouterNetworkH2Adapter: RouterNetworkOutputPort {
@@ -383,6 +399,8 @@ class RouterH2Mapper {
 	}
 }
 ```
+
+### 파일 어댑터
 
 ```kotlin
 class RouterNetworkFileAdapter: RouterNetworkOutputPort {
