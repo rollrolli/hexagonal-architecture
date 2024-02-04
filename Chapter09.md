@@ -186,3 +186,11 @@ this.switchMaganementGenericAdapter = new SwitchManagementGenericAdapter(routerM
 ```
 
 ### NetworkManagementGenericAdapter 초기화
+```java
+ServiceLoader<NetworkManagementUseCase> loaderUseCaseNetwork = ServiceLoader.load(NetworkManagementUseCase.class);
+NetworkManagementUseCase networkManagementUseCase = loaderUseCaseNetwork.findFirst().get();
+
+networkManagementUseCase.setOutputPort(routerManagementOutputPort);
+
+this.networkMaganementGenericAdapter = new NetworkManagementGenericAdapter(switchManagementUseCase, networkManagementUseCase);
+```
